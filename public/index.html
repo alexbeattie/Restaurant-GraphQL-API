@@ -1,0 +1,118 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Web Restaurant</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .category {
+      margin: 30px 0;
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 5px;
+    }
+
+    .category h2 {
+      color: #2c3e50;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+    }
+
+    .item {
+      margin: 15px 0;
+      padding: 15px;
+      background: white;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .item-name {
+      color: #2980b9;
+      margin: 0;
+    }
+
+    .item-price {
+      float: right;
+      color: #27ae60;
+      font-weight: bold;
+    }
+
+    .item-desc {
+      color: #666;
+      margin: 5px 0;
+    }
+
+    .item-options {
+      color: #8e44ad;
+      font-style: italic;
+    }
+
+    .error {
+      color: #e74c3c;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Web Restaurant Menu</h1>
+  <div id="app"></div>
+  <script>
+    async function fetchMenu() {
+      try {
+        const response = await fetch('http://localhost:4000', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: `
+              query {
+                categories {
+                  name
+                  items {
+                    id
+                    name
+                    description
+                    price
+                    options
+                    multiPrices { uno dos tres }
+                  }
+                }
+              }
+            `
+          })
+        });
+        const { data, errors } = await response.json();
+
+        if (errors) throw new Error(errors[0].message);
+
+        const app = document.getElementById('app');
+        app.innerHTML = data.categories.map(category => `
+          <div class="category">
+            <h2>${category.name}</h2>
+            ${category.items.map(item => `
+              <div class="item">
+                <h3 class="item-name">${item.name}<span class="item-price">$${item.price}</span></h3>
+                ${item.description ? `<p class="item-desc">${item.description}</p>` : ''}
+                ${item.options ? `<p class="item-options">Options: ${item.options.join(', ')}</p>` : ''}
+                ${item.multiPrices ? `<p class="item-options">Pricing: 1: $${item.multiPrices.uno}, 2: $${item.multiPrices.dos}, 3: $${item.multiPrices.tres}</p>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        `).join('');
+      } catch (error) {
+        document.getElementById('app').innerHTML = `<p class="error">Error loading menu: ${error.message}</p>`;
+      }
+    }
+
+    fetchMenu();
+  </script>
+</body>
+
+</html>

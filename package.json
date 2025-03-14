@@ -1,0 +1,21 @@
+{
+  "name": "restaurant",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "dependencies": {
+    "apollo-server": "^3.13.0",
+    "graphql": "^16.10.0"
+  },
+  "devDependencies": {
+    "jest": "^27.0.6"
+  }
+}
